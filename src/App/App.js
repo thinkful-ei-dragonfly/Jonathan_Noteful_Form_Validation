@@ -10,12 +10,31 @@ import AddNote from '../AddNote/AddNote'
 import dummyStore from '../dummy-store'
 import { getNotesForFolder, findNote, findFolder } from '../notes-helpers'
 import './App.css'
+import Context from '../Context'
 
 class App extends Component {
   state = {
     notes: [],
     folders: [],
   };
+
+  handleAddFolder = folder => {
+    this.setState({
+      folders: [...this.state.folders, folder]
+    })
+  }
+
+  handleAddNote = note => {
+    this.setState({
+      notes: [...this.state.notes, note]
+    })
+  }
+
+  hanldeDeleteNote = noteId => {
+    this.setState({
+      notes: [this.state.notes.filter(note => note.id !== noteId)]
+    })
+  }
 
   componentDidMount() {
     // fake date loading from API call
@@ -120,7 +139,15 @@ class App extends Component {
   }
 
   render() {
+    const value = {
+      notes: this.state.notes,
+      folders: this.state.folders,
+      addFolder: this.handleAddFolder,
+      addNote: this.handleAddNote,
+      deleteNote:this.handleDeleteNote,
+    }
     return (
+      <Context.Provider value={value}>
       <div className='App'>
         <nav className='App__nav'>
           {this.renderNavRoutes()}
@@ -136,6 +163,7 @@ class App extends Component {
           {this.renderMainRoutes()}
         </main>
       </div>
+      </Context.Provider>
     )
   }
 }
