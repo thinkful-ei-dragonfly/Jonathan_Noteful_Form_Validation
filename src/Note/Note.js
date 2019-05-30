@@ -2,14 +2,19 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Context from '../Context'
 import './Note.css'
 
-export default function Note(props) {
+export default class Note extends React.Component {
+  static contextType = Context;
+  
+  render(){
+    const {name, id, modified} = this.props
   return (
     <div className='Note'>
       <h2 className='Note__title'>
-        <Link to={`/note/${props.id}`}>
-          {props.name}
+        <Link to={`/note/${id}`}>
+          {name}
         </Link>
       </h2>
       <button className='Note__delete' type='button'>
@@ -22,10 +27,11 @@ export default function Note(props) {
           Modified
           {' '}
           <span className='Date'>
-            {format(props.modified, 'Do MMM YYYY')}
+            {format(modified, 'Do MMM YYYY')}
           </span>
         </div>
       </div>
     </div>
   )
+  }
 }

@@ -1,13 +1,15 @@
 import React, { Component } from 'react'
 import NotefulForm from '../NotefulForm/NotefulForm'
+import Context from '../Context'
 import './AddNote.css'
 
 export default class AddNote extends Component {
+  static contextType = Context;
   static defaultProps = {
     folders: [],
   }
   render() {
-    const { folders } = this.props
+    const { folders } = this.context
     return (
       <section className='AddNote'>
         <h2>Create a note</h2>

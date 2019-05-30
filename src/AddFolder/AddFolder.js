@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import NotefulForm from '../NotefulForm/NotefulForm'
+import Context from '../Context'
 import './AddFolder.css'
 
 export default class AddFolder extends Component {
+  static contextType = Context;
+  
   render() {
     return (
       <section className='AddFolder'>
