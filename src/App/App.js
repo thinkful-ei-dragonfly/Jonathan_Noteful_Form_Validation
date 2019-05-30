@@ -11,6 +11,8 @@ import dummyStore from '../dummy-store'
 import { getNotesForFolder, findNote, findFolder } from '../notes-helpers'
 import './App.css'
 import Context from '../Context'
+import apiEndpoint from '../apiEndpoint'
+
 
 class App extends Component {
   state = {
@@ -30,15 +32,38 @@ class App extends Component {
     })
   }
 
-  hanldeDeleteNote = noteId => {
+  handleDeleteNote = noteId => {
+    console.log("Delete button clicked")
     this.setState({
-      notes: [this.state.notes.filter(note => note.id !== noteId)]
+      notes: this.state.notes.filter(note => note.id !== noteId)
     })
   }
 
   componentDidMount() {
-    // fake date loading from API call
-    setTimeout(() => this.setState(dummyStore), 600)
+    Promise.all([
+      fetch(`${apiEndpoint.ApiEndpoint}/notes`),
+      fetch(`${apiEndpoint.ApiEndpoint}/folders`)
+    ])
+      .then(([notesRes, folderRes]) => {
+        if (!notesRes.ok)
+          return notesRes.json()
+            .then(e => Promise.reject(e))
+        if (!folderRes.ok)
+          return folderRes.json()
+            .then(e => Promise.reject(e))
+
+        return Promise.all([
+          notesRes.json(),
+          folderRes.json(),
+        ])
+      })
+      .then(([notes, folders]) => {
+        this.setState({ notes, folders })
+      })
+      .catch(error => {
+        console.log({ error })
+      })
+
   }
 
   renderNavRoutes() {
@@ -144,25 +169,25 @@ class App extends Component {
       folders: this.state.folders,
       addFolder: this.handleAddFolder,
       addNote: this.handleAddNote,
-      deleteNote:this.handleDeleteNote,
+      deleteNote: this.handleDeleteNote,
     }
     return (
       <Context.Provider value={value}>
-      <div className='App'>
-        <nav className='App__nav'>
-          {this.renderNavRoutes()}
-        </nav>
-        <header className='App__header'>
-          <h1>
-            <Link to='/'>Noteful</Link>
-            {' '}
-            <FontAwesomeIcon icon='check-double' />
-          </h1>
-        </header>
-        <main className='App__main'>
-          {this.renderMainRoutes()}
-        </main>
-      </div>
+        <div className='App'>
+          <nav className='App__nav'>
+            {this.renderNavRoutes()}
+          </nav>
+          <header className='App__header'>
+            <h1>
+              <Link to='/'>Noteful</Link>
+              {' '}
+              <FontAwesomeIcon icon='check-double' />
+            </h1>
+          </header>
+          <main className='App__main'>
+            {this.renderMainRoutes()}
+          </main>
+        </div>
       </Context.Provider>
     )
   }

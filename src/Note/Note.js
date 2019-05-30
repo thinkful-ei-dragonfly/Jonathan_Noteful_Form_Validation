@@ -4,9 +4,37 @@ import { format } from 'date-fns'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Context from '../Context'
 import './Note.css'
+import apiEndpoint from '../apiEndpoint'
 
 export default class Note extends React.Component {
+  static defaultProps = {
+    onDeleteNote: () => {},
+  }
+
   static contextType = Context;
+
+  handleClickDelete = e => {
+    e.preventDefault()
+    const noteId = this.props.id
+    
+    fetch(`${apiEndpoint.ApiEndpoint}/notes/${noteId}`, {
+      method: 'DELETE',
+      headers:{
+        'content-type': 'application/json'
+      },
+    })
+    .then(res => {
+      if(!res.ok)
+      return res.json().then(e => Promise.reject(e))
+      return res.json()
+    })
+    .then(() => {
+      this.context.deleteNote(noteId)
+    })
+    .catch(error => {
+      console.log( { error })
+    })
+  }
   
   render(){
     const {name, id, modified} = this.props
@@ -17,7 +45,7 @@ export default class Note extends React.Component {
           {name}
         </Link>
       </h2>
-      <button className='Note__delete' type='button'>
+      <button onClick={this.handleClickDelete} className='Note__delete' type='button'>
         <FontAwesomeIcon icon='trash-alt' />
         {' '}
         remove
