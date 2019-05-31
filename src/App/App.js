@@ -18,6 +18,8 @@ class App extends Component {
   state = {
     notes: [],
     folders: [],
+    formValid: false,
+    validationMessages: {}
   };
 
   handleAddFolder = folder => {
